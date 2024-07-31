@@ -1,0 +1,218 @@
+GIT
+===
+
+git log
+git log --graph
+git log --since="4 days ago"
+git log -S build
+git log --stat
+git log --shortstat
+git log --pretty=format:"%h - %an - %ar - %s"
+git log --oneline
+
+git clone git@github.com:linuxacademy/content-source-control-git.git
+git remote
+git remote -v 
+git remote show origin
+git fetch origin
+git pull
+git branch readme-updates
+git checkout readme-updates
+echo "Be sure to have your SSH key set up and that your public key (located in ~/.ssh/id_rsa.pub) is added to your ItHub account." >> README.md
+git commit -a -m "updated README to include info on ssh key"
+git push -u origin readme-updates
+
+#generate private key for new ssl certificate
+openssl genrsa -out key.pem 2048
+#create certificate signing request(CSR) based on the new private key above
+openssl req -new -sha256 -key key.pem -out csr.csr
+#we are not going to get the certificate signed by a 3rd party
+#create self signed certificate
+openssl req -x509 -sha256 -days 365 -key key.pem -in csr.csr -out certificate.pem
+
+mkdir /etc/gitlab/ssl
+chmod 700 /etc/gitlab/ssl
+cp *.pem /etc/gitlab/ssl/
+vim /etc/gitlab/gitlab.rb
+gitlab-ctl reconfigure
+
+git clone git@e17870bc4f1c.mylabserver.com:it-dept/practice.git 
+cd practice/
+git config user.name "John Smith"
+git config user.email "jsmith@e1717870bc4f1c.mylabserver.com"
+vim README.md
+git add README.md
+git commit -m "added README file"
+git push -u origin master
+git checkout -b new-changelog
+echo "Changelog:" >> CHANGELOG.md
+git add CHANGELOG.md
+git commit -m "added CHANGELOG.md"
+git remote -v
+git push origin new-changelog
+##GitLab --> merge request
+##GitHub --> pull request 
+git checkout master
+git pull 
+ls
+
+
+git init
+vim .gitignore
+git add .
+git rm --cached app -f
+git status
+git checkout -b nfs
+git branch
+git checkout master
+
+
+
+17/07/2024
+===========
+rm -rf lfcs
+git clone https://github.com/ycng76/lfcs.git
+cd lfcs/all-courses/
+git status
+git branch -a
+git checkout -b dev
+git branch -a
+git status
+cd ..
+vim .gitignore
+cat .gitignore
+git status
+git commit -a -m "Add .vagrant directory to .gitignore"
+git status
+git push --set-upstream origin dev  ## will create new dev branch on github
+git log
+git log --oneline
+git log --oneline -n5
+git log --oneline --decorate
+git log --graph --oneline --decorate
+git log --stat
+cd all-courses/
+cp -p ../../Vagrantfile Vagrantfile
+vagrant up ubuntu2
+git status
+git add .
+git commit -m "Add port forwarding for vnc to work on ubuntu2"
+git push
+git show
+vim Vagrantfile
+vagrant validate
+cp -p ../../extrapackages.yml .
+git status
+git add .
+git commit -am "Updated VagrantFile to include extrapackages.yml playbook that will install xfce4 and tightvncserver via ansible_local provisioner"
+git status
+git push
+git status
+vagrant reload ubuntu2 --provision
+vagrant ssh ubuntu2
+git show
+git status
+git branch
+git checkout main
+git merge dev
+git status
+git push
+git branch -a
+git log
+git checkout dev
+git status
+
+  730  git log
+  731  git checkout main
+  732  git push origin/main
+  733  git status
+  734  git log
+  735  git branch -a
+  736  git show
+  737  git push --force origin main
+  738  git status
+  739  git push --set-upstream origin main
+  741  git checkout dev
+  742  git push --set-upstream origin dev
+  743  git status
+  744  git branch -a
+  745  history
+
+vagrant@ubuntu1:~$ ssh-keygen
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/vagrant/.ssh/id_rsa):
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/vagrant/.ssh/id_rsa
+Your public key has been saved in /home/vagrant/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:fHEd5y2m+oJAaGxDSILMRZXbnH77v+s1UPJ+OWUbRf0 vagrant@ubuntu1
+The key's randomart image is:
++---[RSA 3072]----+
+|=.++...       . +|
+|.+. ..       . =o|
+|   o .+ . . ..+.=|
+|    *..=   o o+.E|
+|   o o. S . .. oo|
+|      .. o .  o.=|
+|       ...o    B.|
+|        ....  . +|
+|          .o+=o  |
++----[SHA256]-----+
+vagrant@ubuntu1:~$ cat /home/vagrant/.ssh/id_rsa.pub
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDPL9FJbU1fMOhdD81W6BjrBN5nDyv8v1gcBG/w/jvShWyeUFiY79oPPpIqMknBp9PKM1Ax2EKfvBic9jAdPabBKD2+/qtvs2schHMSSSVJEMAk8F9sMfJOv0qBfc2C3INuDnQznGoZ/dIrox4tl5hcPwfUYwOduP4px9go1sXPYIrAwDv8GDsBHLon1HgbrdcXyTA12wQVj0yjO4h5uW8y4dXIMkk9RGZaL1bJmD+2Nnlq7cuvRdcBMKtRKYs1Y3aofonqu2/HSCpPOYW6lRw7OG5Njl/TBvWOdssx/0JhyQCGES6s478tVuiDORiOmRz1iR+NMcNw1jIFh3uJoGYBx9jCPodwqPeUH/Ijypvrv7vI/jewxfEJnIyOOVjdpfDcdLHkg6+YXZqQNbc5ePuT8YT2XIoThB8uUUg+b9HRd/u2lVFMynhdnc93CH33yMWBlGcshLPn4UoxSiP/wLhE/Ih71wIA3pz0Oop3e3utIaCBpN0rAWf1BIQwoOLtpvM= vagrant@ubuntu1
+vagrant@ubuntu1:~$ eval $(ssh-agent)
+Agent pid 21104
+vagrant@ubuntu1:~$ ssh-add
+Enter passphrase for /home/vagrant/.ssh/id_rsa:
+Identity added: /home/vagrant/.ssh/id_rsa (vagrant@ubuntu1)
+vagrant@ubuntu1:~$ ssh vagrant@192.168.56.102
+The authenticity of host '192.168.56.102 (192.168.56.102)' can't be established.
+ECDSA key fingerprint is SHA256:FoqXmwgH6shk/uAGu74e0QoaEiTDAbY8bDo4byG/Yks.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '192.168.56.102' (ECDSA) to the list of known hosts.
+Welcome to Ubuntu 20.04.6 LTS (GNU/Linux 5.4.0-189-generic x86_64)
+
+Last login: Wed Jul 17 20:49:23 2024 from 10.0.2.2
+vagrant@ubuntu2:~$
+
+
+
+23/07/2024
+==========
+Learning GitLab  Linkedin Learning
+GitLab's merge requests 'same as' GitHub's pull requests 
+
+
+31/07/2024
+==========
+vim Vagrantfile
+git status
+git commit -am "Add additional disks for LFCS disk encryption exercise in Vagrantfile"
+git branch -a
+git push
+git checkout main
+git merge dev
+git push
+git checkout dev
+git log --oneline
+794c577 (HEAD -> dev, origin/dev) Create new COURSE-REFERENCE directory for all course reference guides
+62e8c27 (origin/main, origin/HEAD, main) ACG course reference update#1
+54a067f Add additional disks for LFCS disk encryption exercise in Vagrantfile
+baae5f8 Updated VagrantFile to include extrapackages.yml playbook that will install xfce4 and tightvncserver via ansible_local provisioner
+cc05101 Add port forwarding for vnc to work on ubuntu2
+2b48bc2 Add .vagrant directory to .gitignore
+git reset --hard 54a067f
+git push origin dev -f
+git status
+vim COURSE-REFERENCE/Ubuntu_Storage_Management.txt
+git add .
+git commit -m "Create new COURSE-REFERENCE directory to hold all course reference guides"  
+git status
+git push
+git checkout main
+git pull
+git merge dev
+git log --oneline
+git status
+

@@ -1,0 +1,372 @@
+    ┌──────────────────────────────────────────────────────────────────────┐
+    │                 • MobaXterm Personal Edition v24.1 •                 │
+    │               (SSH client, X server and network tools)               │
+    │                                                                      │
+    │ ⮞ Local Bash distribution:   Git-Bash 64bit                        │
+    │ ⮞ Your DISPLAY is set to 192.168.1.65:0.0                            │
+    │ ⮞ For more info, ctrl+click on help or visit our website.            │
+    └──────────────────────────────────────────────────────────────────────┘
+
+
+nyiu_@DESKTOP-1CUHAME MINGW64 ~/AppData/Roaming/MobaXterm/home/vagrant-project
+$ cd lfcs/all-courses/
+
+nyiu_@DESKTOP-1CUHAME MINGW64 ~/AppData/Roaming/MobaXterm/home/vagrant-project/lfcs/all-courses (main)
+$ ll
+total 5
+-rw-r--r-- 1 nyiu_ 197610 609 Jul 12 15:45 ubuntu.yml
+-rw-r--r-- 1 nyiu_ 197610 769 Jul 12 15:45 Vagrantfile
+
+nyiu_@DESKTOP-1CUHAME MINGW64 ~/AppData/Roaming/MobaXterm/home/vagrant-project/lfcs/all-courses (main)
+$ vagrant up ubuntu1
+Bringing machine 'ubuntu1' up with 'virtualbox' provider...
+==> ubuntu1: Checking if box 'ubuntu/focal64' version '20230420.0.0' is up to date...
+==> ubuntu1: Clearing any previously set forwarded ports...
+==> ubuntu1: Clearing any previously set network interfaces...
+==> ubuntu1: Preparing network interfaces based on configuration...
+    ubuntu1: Adapter 1: nat
+    ubuntu1: Adapter 2: hostonly
+==> ubuntu1: Forwarding ports...
+    ubuntu1: 22 (guest) => 2222 (host) (adapter 1)
+==> ubuntu1: Running 'pre-boot' VM customizations...
+==> ubuntu1: Booting VM...
+==> ubuntu1: Waiting for machine to boot. This may take a few minutes...
+    ubuntu1: SSH address: 127.0.0.1:2222
+    ubuntu1: SSH username: vagrant
+    ubuntu1: SSH auth method: private key
+==> ubuntu1: Machine booted and ready!
+[ubuntu1] GuestAdditions 7.0.18 running --- OK.
+==> ubuntu1: Checking for guest additions in VM...
+==> ubuntu1: Setting hostname...
+==> ubuntu1: Configuring and enabling network interfaces...
+==> ubuntu1: Mounting shared folders...
+    ubuntu1: /vagrant => C:/Users/nyiu_/AppData/Roaming/MobaXterm/home/vagrant-project/lfcs/all-courses
+==> ubuntu1: Machine already provisioned. Run `vagrant provision` or use the `--provision`
+==> ubuntu1: flag to force provisioning. Provisioners marked to run always will still run.
+
+nyiu_@DESKTOP-1CUHAME MINGW64 ~/AppData/Roaming/MobaXterm/home/vagrant-project/lfcs/all-courses (main)
+$ vagrant ssh ubuntu1
+Welcome to Ubuntu 20.04.6 LTS (GNU/Linux 5.4.0-189-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+ System information as of Fri Jul 12 22:05:16 UTC 2024
+
+  System load:  0.08              Processes:               124
+  Usage of /:   7.5% of 38.70GB   Users logged in:         0
+  Memory usage: 9%                IPv4 address for enp0s3: 10.0.2.15
+  Swap usage:   0%
+
+
+Expanded Security Maintenance for Applications is not enabled.
+
+0 updates can be applied immediately.
+#!/bin/bash
+
+1 additional security update can be applied with ESM Apps.
+Learn more about enabling ESM Apps service at https://ubuntu.com/esm
+
+New release '22.04.3 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+
+Last login: Fri Jul 12 09:41:56 2024 from 10.0.2.2
+vagrant@ubuntu1:~$ cd project1/
+vagrant@ubuntu1:~/project1$ git status
+On branch master
+Your branch is up to date with 'origin/master'.
+
+nothing to commit, working tree clean
+vagrant@ubuntu1:~/project1$ git branch
+* master
+vagrant@ubuntu1:~/project1$ git branch -a
+* master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+vagrant@ubuntu1:~/project1$ git checkout -b dev
+Switched to a new branch 'dev'
+vagrant@ubuntu1:~/project1$ git branch -a
+* dev
+  master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+vagrant@ubuntu1:~/project1$ vim hello.sh
+vagrant@ubuntu1:~/project1$ git commit -a -m 'Add shebang'
+[dev e3568ff] Add shebang
+ 1 file changed, 1 insertion(+)
+vagrant@ubuntu1:~/project1$ git log
+commit e3568ff6445978acd86b988bb761381f072148e5 (HEAD -> dev)
+Author: tux penguin <tux@example.com>
+Date:   Fri Jul 12 22:08:30 2024 +0000
+
+    Add shebang
+
+commit 5792f1b9b3019ce3bb9b1f050531e9e5d2fb740b (tag: v1.0, origin/master, origin/HEAD, master)
+Author: tux penguin <tux@example.com>
+Date:   Fri Jul 12 09:54:21 2024 +0000
+
+    First script version
+vagrant@ubuntu1:~/project1$ git status
+On branch dev
+nothing to commit, working tree clean
+vagrant@ubuntu1:~/project1$ cat hello.sh
+#!/bin/bash
+echo "hello"
+vagrant@ubuntu1:~/project1$ git checkout master
+Switched to branch 'master'
+Your branch is up to date with 'origin/master'.
+vagrant@ubuntu1:~/project1$ cat hello.sh
+echo "hello"
+vagrant@ubuntu1:~/project1$ git checkout dev
+Switched to branch 'dev'
+vagrant@ubuntu1:~/project1$ cat hello.sh
+#!/bin/bash
+echo "hello"
+vagrant@ubuntu1:~/project1$ git status
+On branch dev
+nothing to commit, working tree clean
+vagrant@ubuntu1:~/project1$ git show
+commit e3568ff6445978acd86b988bb761381f072148e5 (HEAD -> dev)
+Author: tux penguin <tux@example.com>
+Date:   Fri Jul 12 22:08:30 2024 +0000
+
+    Add shebang
+
+diff --git a/hello.sh b/hello.sh
+index 09990d4..af7c9ad 100644
+--- a/hello.sh
++++ b/hello.sh
+@@ -1 +1,2 @@
++#!/bin/bash
+ echo "hello"
+vagrant@ubuntu1:~/project1$ git push origin dev
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Writing objects: 100% (3/3), 264 bytes | 264.00 KiB/s, done.
+Total 3 (delta 0), reused 0 (delta 0)
+To localhost:~/git/project1
+ * [new branch]      dev -> dev
+vagrant@ubuntu1:~/project1$ git branch
+* dev
+  master
+vagrant@ubuntu1:~/project1$ git branch -a
+* dev
+  master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/dev
+  remotes/origin/master
+vagrant@ubuntu1:~/project1$ git checkout master
+Switched to branch 'master'
+Your branch is up to date with 'origin/master'.
+vagrant@ubuntu1:~/project1$ cat hello.sh
+echo "hello"
+vagrant@ubuntu1:~/project1$ git merge dev
+Updating 5792f1b..e3568ff
+Fast-forward
+ hello.sh | 1 +
+ 1 file changed, 1 insertion(+)
+vagrant@ubuntu1:~/project1$ cat hello.sh
+#!/bin/bash
+echo "hello"
+vagrant@ubuntu1:~/project1$ git status
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+vagrant@ubuntu1:~/project1$ git show
+commit e3568ff6445978acd86b988bb761381f072148e5 (HEAD -> master, origin/dev, dev)
+Author: tux penguin <tux@example.com>
+Date:   Fri Jul 12 22:08:30 2024 +0000
+
+    Add shebang
+
+diff --git a/hello.sh b/hello.sh
+index 09990d4..af7c9ad 100644
+--- a/hello.sh
++++ b/hello.sh
+@@ -1 +1,2 @@
++#!/bin/bash
+ echo "hello"
+vagrant@ubuntu1:~/project1$ git push
+Total 0 (delta 0), reused 0 (delta 0)
+To localhost:~/git/project1
+   5792f1b..e3568ff  master -> master
+vagrant@ubuntu1:~/project1$ git status
+On branch master
+Your branch is up to date with 'origin/master'.
+
+nothing to commit, working tree clean
+vagrant@ubuntu1:~/project1$ git tag v1.1
+vagrant@ubuntu1:~/project1$ git push origin v1.1
+Total 0 (delta 0), reused 0 (delta 0)
+ * [new tag]         v1.1 -> v1.1
+vagrant@ubuntu1:~/project1$ git show
+commit e3568ff6445978acd86b988bb761381f072148e5 (HEAD -> master, tag: v1.1, origin/master, origin/dev, origin/HEAD, dev)
+Author: tux penguin <tux@example.com>
+Date:   Fri Jul 12 22:08:30 2024 +0000
+
+    Add shebang
+
+diff --git a/hello.sh b/hello.sh
+index 09990d4..af7c9ad 100644
+--- a/hello.sh
++++ b/hello.sh
+@@ -1 +1,2 @@
++#!/bin/bash
+ echo "hello"
+vagrant@ubuntu1:~/project1$ git log
+commit e3568ff6445978acd86b988bb761381f072148e5 (HEAD -> master, tag: v1.1, origin/master, origin/dev, origin/HEAD, dev)
+Author: tux penguin <tux@example.com>
+Date:   Fri Jul 12 22:08:30 2024 +0000
+
+    Add shebang
+
+commit 5792f1b9b3019ce3bb9b1f050531e9e5d2fb740b (tag: v1.0)
+Author: tux penguin <tux@example.com>
+Date:   Fri Jul 12 09:54:21 2024 +0000
+
+    First script version
+vagrant@ubuntu1:~/project1$ git log
+commit e3568ff6445978acd86b988bb761381f072148e5 (HEAD -> master, tag: v1.1, origin/master, origin/dev, origin/HEAD, dev)
+Author: tux penguin <tux@example.com>
+Date:   Fri Jul 12 22:08:30 2024 +0000
+
+    Add shebang
+
+commit 5792f1b9b3019ce3bb9b1f050531e9e5d2fb740b (tag: v1.0)
+Author: tux penguin <tux@example.com>
+Date:   Fri Jul 12 09:54:21 2024 +0000
+
+    First script version
+vagrant@ubuntu1:~/project1$ git status
+On branch master
+Your branch is up to date with 'origin/master'.
+
+nothing to commit, working tree clean
+vagrant@ubuntu1:~/project1$ git branch -a
+  dev
+* master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/dev
+  remotes/origin/master
+
+
+Understanding boot time and slow services:
+systemd-analyze
+systemd-analyze blame
+systemd-analyze dump
+
+login using Git-Bash 
+====================
+nyiu_@DESKTOP-1CUHAME MINGW64 ~/AppData/Roaming/MobaXterm/home/vagrant-project
+$ ssh vagrant@127.0.0.1 -p 2222 -i ./lfcs/all-courses/.vagrant/machines/ubuntu1/virtualbox/private_key
+OR
+$ ssh vagrant@localhost -p 2222 -i ./lfcs/all-courses/.vagrant/machines/ubuntu1/virtualbox/private_key
+OR
+$ ssh vagrant@localhost -p 2222 -i ~/.vagrant.d/insecure_private_key
+
+ssh-keygen -R [localhost]:2222 --> ubuntu1
+ssh-keygen -R [localhost]:2200 --> ubuntu2
+
+or putty using saved session vagrant@127.0.0.1 port 2222 with virtual box private key converted to ppk (i.e.C:\Users\nyiu_\AppData\Roaming\MobaXterm\home\vagrant-project\lfcs\all-courses\.vagrant\machines\ubuntu1\virtualbox\private_key.ppk)
+
+$ vagrant ssh-config
+Host ubuntu1
+  HostName 127.0.0.1
+  User vagrant
+  Port 2222
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+  PasswordAuthentication no
+  IdentityFile C:/Users/nyiu_/AppData/Roaming/MobaXterm/home/vagrant-project/lfcs/all-courses/.vagrant/machines/ubuntu1/virtualbox/private_key
+  IdentitiesOnly yes
+  LogLevel FATAL
+  PubkeyAcceptedKeyTypes +ssh-rsa
+  HostKeyAlgorithms +ssh-rsa
+
+Host ubuntu2
+  HostName 127.0.0.1
+  User vagrant
+  Port 2200
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+  PasswordAuthentication no
+  IdentityFile C:/Users/nyiu_/AppData/Roaming/MobaXterm/home/vagrant-project/lfcs/all-courses/.vagrant/machines/ubuntu2/virtualbox/private_key
+  IdentitiesOnly yes
+  LogLevel FATAL
+  PubkeyAcceptedKeyTypes +ssh-rsa
+  HostKeyAlgorithms +ssh-rsa
+
+
+Shell Shortcuts
+===============
+Move to the start of the line CTRL+a
+Move to the end of the line CTRL+e
+Repeat the last command and arguments !!
+Repeat the last argument ESC+.
+Move to your home directory cd
+Move to the previous directory cd -
+Recall previous command CTRL+r
+
+Redirecting Output
+==================
+> file2
+ls -l /etc/hosts > out.txt
+ls -l /etc/Hosts 2> err.txt
+ls -l /etc/hosts /etc/Hosts &> combined.txt
+ls -l | wc -l
+echo "8.8.8.8 google" | sudo tee -a /etc/hosts
+
+Creating Shortcuts Using Aliases
+================================
+alias - Create or display aliases on your shell
+type - Like alias, it also display the command that it is aliased to for e.g type ls	
+unalias - Delete aliases from your shell
+\ - Temporarily runs a command withour alias for e.g. \ls 
+
+Using Vim and Sed to Edit Files
+===============================
+vim +$ ~/hosts
+vim +1 ~/hosts  --> line number 1
+vim +/google/ ~/hosts
+vimtutor
+sed -i 's/google/googledns/' ~/hosts
+sed -i '$d' ~/hosts
+sed -i '1i #This is a hosts file' ~/hosts
+sed -i '1d #This is a hosts file' ~/hosts
+
+                               Lesson 5 SUMMARY
+
+
+  1.  :!command  executes an external command.
+
+      Some useful examples are:
+         (Windows)        (Unix)
+          :!dir            :!ls            -  shows a directory listing.
+          :!del FILENAME   :!rm FILENAME   -  removes file FILENAME.
+
+  2.  :w FILENAME  writes the current Vim file to disk with name FILENAME.
+
+  3.  v  motion  :w FILENAME  saves the Visually selected lines in file
+      FILENAME.
+
+  4.  :r FILENAME  retrieves disk file FILENAME and puts it below the
+      cursor position.
+
+  5.  :r !dir  reads the output of the dir command and puts it below the
+      cursor position.
+
+
+
+Understanding File Metadata
+===========================
+ls -l /etc/hosts
+ls -l /etc/shadow
+stat /etc/services
+stat -c %a /etc/services
+ls -lh /etc/services
+
+
