@@ -1,0 +1,266 @@
+Ubuntu Linux Adminitration series: 
+	Essential Commands
+	Storage Management
+==============================================
+lsblk
+lsblk -f
+find /dev/ -type b
+ls -l /dev/sda
+sudo fallocate -l500M /root/disk1
+sudo ls -lh /root/disk1
+lsblk
+sudo losetup /dev/loop3 /root/disk1
+sudo losetup
+lsblk
+
+sudo fdisk /dev/loop3 
+n
+p
+ENTER
+ENTER
+ENTER
+p
+w
+lsblk
+sudo partprobe /dev/loop3
+lsblk
+sudo wipefs -a /dev/loop3
+sudo parted /dev/loop3 mklabel msdos mkpart primary 0% 50% mkpart primary 50% 100% print
+lsblk
+
+Persistent loop device:
+lsblk
+sudo losetup -d /dev/loop3
+lsblk
+git clone https://github.com/theurbanpenguin/lfcs
+cat lfcs/storage/disk1.service 		e.g. /dev/loop3
+sudo cp lfcs/storage/disk1.service /etc/systemd/system
+sudo systemctl daemon-reload
+sudo systemctl enable --now disk1
+lsblk
+sudo systemctl cat disk1
+
+lsblk -f
+sudo mkfs.ext4 /dev/loop3p1
+sudo mkfs -t <TAB>
+sudo mkfs -t xfs /dev/loop3p1
+sudo mkfs -t xfs /dev/loop3p2
+lsblk -f
+
+sudo mkdir -m 0000 /shared_ext4 /shared_xfs
+ls -ld /shared_*
+ls -ldi /shared_*
+cd /shared_ext4
+sudo mount /dev/loop3p1 /shared_ext4
+ls -ldi /shared_ext4
+sudo chmod 1777 /shared_ext4
+cd
+sudo mount /dev/loop3p2 /shared_xfs
+sudo chmod 1777 /shared_xfs
+ls -ldi /shared_*
+
+mount -t xfs
+mount -t ext4
+lsblk -f
+vim /etc/fstab		UUID=xxxxx /shared_ext4 ext4 defaults 0 0
+:r!sudo blkid /dev/loop3p2  5dw 11w d$ /shared_xfs xfs defaults 0 0
+sudo umount /shared_ext4
+sudo umount /shared_xfs
+lsblk -f
+sudo mount -a
+lsblk -f
+man 5 fstab
+
+sudo -i
+mount -t xfs
+mount -o remount,uquota /shared_xfs 
+mount -t xfs
+umount /shared_xfs
+vim /etc/fstab		/shared_xfs xfs uquota 0 0 
+mount -a
+mount -t xfs
+ls -l /shared_xfs
+sudo -u vagrant fallocate -l20M /shared_xfs/file1
+ls -l /shared_xfs
+xfs_quota
+help
+quit
+xfs_quota -x -c 'report -h' /shared_xfs
+xfs_quota -x -c 'limit bsoft=25M bhard=30M vagrant' /shared_xfs
+xfs_quota -x -c 'report -h' /shared_xfs
+sudo -u vagrant fallocate -l8M /shared_xfs/file2
+xfs_quota -x -c 'report -h' /shared_xfs
+sudo -u vagrant fallocate -l1M /shared_xfs/file3
+xfs_quota -x -c 'report -h' /shared_xfs
+sudo -u vagrant fallocate -l10M /shared_xfs/file4
+df -h /shared_xfs
+df -i /shared_xfs
+xfs_quota -x -c 'report -i' /shared_xfs
+
+
+sudo -i
+free -h
+fallocate -l500M disk2
+fallocate -l500M disk3
+ls -lh disk*
+losetup
+disk=$(losetup -f /root/disk2 --show)
+echo $disk
+parted $disk mklabel mksdos mkpart primary 0% 100%
+mkswap ${disk}p1
+blkid ${disk}p1
+swapon ${disk}p1
+swapon -s
+mkswap /root/disk3
+chmod 600 /root/disk3
+swapon -p 10 /root/disk3
+swapon -s
+free -h
+swapoff -a
+swapon -s
+vim /etc/fstab		/root/disk3 swap swap pri-10 0 0
+swapon -s
+swapon -a
+swapon -s
+cat /proc/sys/vm/swappiness
+ls /etc/sysctl*
+grep -R swap /etc/sysctl*
+vim /etc/sysctl.d/99-swap.conf		vm.swappiness=20
+sysctl --system
+!g
+!c
+
+
+
+sudo -i
+swapon -s
+swapoff -a
+cat /etc/fstab
+sed '/swap/d' /etc/fstab
+sed -i '/swap/d' /etc/fstab
+!ca
+losetup
+#losetup --detach /dev/loop5
+wipefs -a --force /root/disk2
+wipefs -a --force /root/disk3
+disk=$(losetup -f /root/disk2 --show)
+echo $disk
+parted /dev/loop4 mklabel msdos mkpart primary 0% 50% mkpart primary 50% 100% set 1 lvm on set 2 lvm on print
+pvcreate -v --pvmetadatacopies=2 ${disk}p1
+pvs
+
+parted $disk print
+vgs
+pvs
+vgcreate -v -s8K vg1 ${disk}p1
+cat /etc/lvm/backup/vg1
+pvdisplay
+vgdisplay | grep "Metadata Areas" 
+vgextend -v vg1 ${disk}p2
+pvs
+pvdisplay
+vgdisplay | grep "Metadata Areas" 
+
+sudo -i
+lvcreate -v -n lv1 -L 300M vg1
+lsblk
+lvs
+vgs
+lvdisplay
+mkfs.xfs /dev/mapper/vg1-lv1
+mkdir /shared_lvm
+mount /dev/mapper/vg1-lv1 /shared_lvm
+find /usr/share/doc -type f -name '*.html' -exec cp {} /shared_lvm \;
+df -h /shared_lvm
+lvextend -l +100%FREE -r vg1/lv1
+df -h /shared_lvm
+
+fallocate -l500M /root/mirror1; fallocate -l500M /root/mirror2
+lsblk
+diska=$(losetup -f /root/mirror1 --show)
+diskb=$(losetup -f /root/mirror2 --show)
+echo $diska $diskb
+parted $diska mklabel msdos mkpart primary 0% 100% set 1 raid on print
+parted $diskb mklabel msdos mkpart primary 0% 100% set 1 raid on print
+cat /proc/mdstat
+mdadm -D --scan
+mdadm --create /dev/md0 --level=mirror --raid-devices=2 $diska $diskb
+cat /proc/mdstat
+mdadm -D /dev/md0
+mdadm -Db /dev/md0 >> /etc/mdadm/mdadm.conf
+update-initramfs -u
+cp -p ~vagrant/lfcs/storage/raid-disk.service /etc/systemd/system/
+vim /etc/systemd/system/raid-disk.service
+systemctl daemon-reload
+systemctl enable raid-disk.service
+reboot
+mdadm -D /dev/md0
+
+lsblk
+lsblk -f
+mkfs.xfs /dev/md0
+blkid /dev/md0
+mkdir /shared_raid
+mount /dev/md0 /shared_raid
+df -h /shared_raid
+vim /etc/fstab  :r!blkid /dev/md0
+umount /shared_raid
+echo 'UUID=ff.. /shared_raid xfs defaults 0 0' >> /etc/fstab
+mount -a
+df -h -x devtmpfs -x tmpfs
+reboot
+
+cat ~vagrant/lfcs/storage/Vagrantfile
+VAGRANT_EXPERIMENTAL=disks vagrant up ubuntu1
+vagrant ssh ubuntu1 -c lsblk
+
+lsblk
+parted /dev/sdd mklabel msdos mkpart primary 0% 100% print
+mkfs.xfs /dev/sdd1
+mkdir /key
+mount /dev/sdd1 /mnt
+dd if=/dev/urandom of=/mnt/keyfile bs=1024 count=4
+chmod 400 /mnt/keyfile
+umount /mnt
+cat ~vagrant/lfcs/storage/key.mount
+cp ~vagrant/lfcs/storage/key.mount /etc/systemd/system/
+vim /etc/systemd/system/key.mount  :r!lsblk -f |grep sdd\
+systemctl daemon-reload
+systemctl enable key.mount
+reboot
+ls /key
+
+
+parted /dev/sdc mklabel msdos mkpart primary 0% 100% print
+apt install cryptsetup
+cryptsetup luksFormat /dev/sdc1   # W3lc0m3@123
+cryptsetup luksOpen /dev/sdc1 data
+ls -l /dev/mapper/data
+cryptsetup -v status data
+cryptsetup luksClose data
+
+cryptsetup luksAddKey /dev/sdc1 /key/keyfile
+vim /etc/crypttab  :r!lsblk -f | grep sdc
+	data UUID=xxxxx /key/keyfile luks
+cryptdisks_start data
+mkfs.xfs /dev/mapper/data
+mkdir /shared_crypt
+mount /dev/mapper/data /shared_crypt
+cp /etc/hosts /shared_crypt
+umount /shared_crypt
+cryptdisks_stop data
+vim /etc/fstab
+	/dev/mapper/data /shared_crypt xfs noauto,user 0 0
+reboot
+
+vagrant@ubuntu1:~$ mount /shared_crypt
+vagrant@ubuntu1:~$ ls /shared_crypt/
+sudo -i
+systemctl status systemd-cryptsetup@data.service
+
+
+
+
+
+
+
